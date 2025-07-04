@@ -1,66 +1,82 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Play, Share, Trash2, Download, Filter } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Progress } from "@/components/ui/progress"
-import BottomNavigation from "@/components/bottom-navigation"
-import { useToast } from "@/hooks/use-toast"
+import { useState, useEffect, useCallback } from "react";
+import { Play, Share, Trash2, Download, Filter } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Progress } from "@/components/ui/progress";
+import BottomNavigation from "@/components/bottom-navigation";
+import { useToast } from "@/hooks/use-toast";
+import Image from "next/image";
 
 interface Shot {
-  id: string
-  timestamp: number
-  imageUrl: string
+  id: string;
+  timestamp: number;
+  imageUrl: string;
   location: {
-    lat: number
-    lng: number
-    name: string
-  }
+    lat: number;
+    lng: number;
+    name: string;
+  };
 }
 
 export default function TimelinePage() {
-  const [shots, setShots] = useState<Shot[]>([])
-  const [filteredShots, setFilteredShots] = useState<Shot[]>([])
-  const [filterPeriod, setFilterPeriod] = useState("all")
-  const [showTimelapseModal, setShowTimelapseModal] = useState(false)
-  const [timelapseProgress, setTimelapseProgress] = useState(0)
-  const [timelapseUrl, setTimelapseUrl] = useState<string | null>(null)
-  const [isGenerating, setIsGenerating] = useState(false)
-  const { toast } = useToast()
+  const [shots, setShots] = useState<Shot[]>([]);
+  const [filteredShots, setFilteredShots] = useState<Shot[]>([]);
+  const [filterPeriod, setFilterPeriod] = useState("all");
+  const [showTimelapseModal, setShowTimelapseModal] = useState(false);
+  const [timelapseProgress, setTimelapseProgress] = useState(0);
+  const [timelapseUrl, setTimelapseUrl] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
-    const savedShots = localStorage.getItem("fixedPointShots")
+    const savedShots = localStorage.getItem("fixedPointShots");
     if (savedShots) {
-      const parsedShots = JSON.parse(savedShots)
-      setShots(parsedShots)
-      setFilteredShots(parsedShots)
+      const parsedShots = JSON.parse(savedShots);
+      setShots(parsedShots);
+      setFilteredShots(parsedShots);
     }
-  }, [])
+  }, []);
 
-  useEffect(() => {
-    filterShots()
-  }, [shots, filterPeriod])
-
-  const filterShots = () => {
-    const now = Date.now()
-    let filtered = shots
+  const filterShots = useCallback(() => {
+    const now = Date.now();
+    let filtered = shots;
 
     switch (filterPeriod) {
       case "week":
-        filtered = shots.filter((shot) => now - shot.timestamp <= 7 * 24 * 60 * 60 * 1000)
-        break
+        filtered = shots.filter(
+          (shot) => now - shot.timestamp <= 7 * 24 * 60 * 60 * 1000
+        );
+        break;
       case "month":
-        filtered = shots.filter((shot) => now - shot.timestamp <= 30 * 24 * 60 * 60 * 1000)
-        break
+        filtered = shots.filter(
+          (shot) => now - shot.timestamp <= 30 * 24 * 60 * 60 * 1000
+        );
+        break;
       default:
-        filtered = shots
+        filtered = shots;
     }
 
-    setFilteredShots(filtered.sort((a, b) => b.timestamp - a.timestamp))
-  }
+    setFilteredShots(filtered.sort((a, b) => b.timestamp - a.timestamp));
+  }, [shots, filterPeriod]);
+
+  useEffect(() => {
+    filterShots();
+  }, [shots, filterPeriod, filterShots]);
 
   const generateTimelapse = async () => {
     if (shots.length < 2) {
@@ -68,31 +84,31 @@ export default function TimelinePage() {
         title: "エラー",
         description: "タイムラプス生成には2枚以上の写真が必要です",
         variant: "destructive",
-      })
-      return
+      });
+      return;
     }
 
-    setIsGenerating(true)
-    setTimelapseProgress(0)
-    setShowTimelapseModal(true)
+    setIsGenerating(true);
+    setTimelapseProgress(0);
+    setShowTimelapseModal(true);
 
     // 擬似的なタイムラプス生成プロセス
     const interval = setInterval(() => {
       setTimelapseProgress((prev) => {
         if (prev >= 100) {
-          clearInterval(interval)
-          setIsGenerating(false)
+          clearInterval(interval);
+          setIsGenerating(false);
           // 擬似的なタイムラプスURL（実際の実装では生成されたBlobURLを使用）
-          setTimelapseUrl("/placeholder.svg?height=400&width=600")
-          return 100
+          setTimelapseUrl("/placeholder.svg?height=400&width=600");
+          return 100;
         }
-        return prev + 10
-      })
-    }, 200)
-  }
+        return prev + 10;
+      });
+    }, 200);
+  };
 
   const shareTimelapse = async () => {
-    if (!timelapseUrl) return
+    if (!timelapseUrl) return;
 
     if (navigator.share) {
       try {
@@ -100,28 +116,28 @@ export default function TimelinePage() {
           title: "定点撮影タイムラプス",
           text: "定点撮影で作成したタイムラプスです",
           url: window.location.href,
-        })
+        });
       } catch (error) {
-        console.error("共有に失敗しました:", error)
+        console.error("共有に失敗しました:", error);
       }
     } else {
       // Web Share API非対応の場合
       toast({
         title: "共有",
         description: "タイムラプスのURLをクリップボードにコピーしました",
-      })
+      });
     }
-  }
+  };
 
   const deleteShot = (shotId: string) => {
-    const updatedShots = shots.filter((shot) => shot.id !== shotId)
-    setShots(updatedShots)
-    localStorage.setItem("fixedPointShots", JSON.stringify(updatedShots))
+    const updatedShots = shots.filter((shot) => shot.id !== shotId);
+    setShots(updatedShots);
+    localStorage.setItem("fixedPointShots", JSON.stringify(updatedShots));
     toast({
       title: "削除完了",
       description: "写真を削除しました",
-    })
-  }
+    });
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
@@ -152,7 +168,9 @@ export default function TimelinePage() {
               <SelectItem value="month">1ヶ月</SelectItem>
             </SelectContent>
           </Select>
-          <span className="text-sm text-gray-500 ml-2">{filteredShots.length}件</span>
+          <span className="text-sm text-gray-500 ml-2">
+            {filteredShots.length}件
+          </span>
         </div>
       </div>
 
@@ -165,7 +183,9 @@ export default function TimelinePage() {
                 <Play className="w-12 h-12 mx-auto" />
               </div>
               <p className="text-gray-600 mb-4">まだ撮影がありません</p>
-              <Button onClick={() => (window.location.href = "/capture")}>撮影を開始</Button>
+              <Button onClick={() => (window.location.href = "/capture")}>
+                撮影を開始
+              </Button>
             </CardContent>
           </Card>
         ) : (
@@ -173,10 +193,14 @@ export default function TimelinePage() {
             <Card key={shot.id} className="overflow-hidden">
               <CardContent className="p-0">
                 <div className="relative">
-                  <img
+                  <Image
                     src={shot.imageUrl || "/placeholder.svg"}
                     alt={`撮影 ${index + 1}`}
-                    className="w-full h-48 object-cover"
+                    fill
+                    className="object-cover"
+                    sizes="100vw"
+                    style={{ objectFit: "cover" }}
+                    priority={index === 0}
                   />
                   <div className="absolute top-2 right-2 bg-black/50 text-white px-2 py-1 rounded text-xs">
                     #{filteredShots.length - index}
@@ -227,7 +251,9 @@ export default function TimelinePage() {
             {isGenerating ? (
               <div className="space-y-3">
                 <Progress value={timelapseProgress} className="w-full" />
-                <p className="text-center text-sm text-gray-600">{timelapseProgress}% 完了</p>
+                <p className="text-center text-sm text-gray-600">
+                  {timelapseProgress}% 完了
+                </p>
               </div>
             ) : timelapseUrl ? (
               <div className="space-y-4">
@@ -252,5 +278,5 @@ export default function TimelinePage() {
 
       <BottomNavigation currentPage="timeline" />
     </div>
-  )
+  );
 }
