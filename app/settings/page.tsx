@@ -3,25 +3,8 @@ import { MapPin, Trash2, Info, MessageSquare, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import BottomNavigation from "@/components/bottom-navigation";
-import { redirect } from "next/navigation";
 import React from "react";
-
-// サーバーアクション: 撮影地点リセット
-export async function resetLocation() {
-  "use server";
-  const cookieStore = await cookies();
-  cookieStore.delete("registeredLocation");
-  redirect("/register-location");
-}
-
-// サーバーアクション: 全データ削除
-export async function clearCache() {
-  "use server";
-  const cookieStore = await cookies();
-  cookieStore.delete("registeredLocation");
-  cookieStore.delete("fixedPointShots");
-  redirect("/");
-}
+import { resetLocation, clearCache } from "./actions";
 
 // 型定義を明示
 
