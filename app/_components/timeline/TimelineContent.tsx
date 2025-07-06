@@ -82,6 +82,11 @@ export default function TimelineContent() {
     router.push(`/posts/${captureId}`);
   };
 
+  const handleUserClick = (e: React.MouseEvent, username: string) => {
+    e.stopPropagation(); // 投稿クリックイベントを防ぐ
+    router.push(`/users/${username}`);
+  };
+
   return (
     <>
       {/* フィルターヘッダー */}
@@ -150,7 +155,12 @@ export default function TimelineContent() {
                 {/* ユーザー情報ヘッダー */}
                 <div className="p-4 pb-3">
                   <div className="flex items-center space-x-3">
-                    <Avatar className="w-10 h-10">
+                    <Avatar
+                      className="w-10 h-10 cursor-pointer hover:opacity-80 transition-opacity"
+                      onClick={(e) =>
+                        handleUserClick(e, capture.profiles.username)
+                      }
+                    >
                       <AvatarImage
                         src={capture.profiles.avatar_url || undefined}
                         alt={capture.profiles.username}
@@ -161,7 +171,12 @@ export default function TimelineContent() {
                     </Avatar>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <p className="font-semibold text-sm">
+                        <p
+                          className="font-semibold text-sm cursor-pointer hover:text-blue-600 transition-colors"
+                          onClick={(e) =>
+                            handleUserClick(e, capture.profiles.username)
+                          }
+                        >
                           {capture.profiles.username}
                         </p>
                         <span className="text-gray-400">•</span>

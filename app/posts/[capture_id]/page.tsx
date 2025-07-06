@@ -75,19 +75,23 @@ export default async function PostDetailPage({ params }: PostDetailPageProps) {
         <Card className="rounded-none">
           <CardContent className="p-4">
             <div className="flex items-center space-x-3">
-              <Avatar className="w-12 h-12">
-                <AvatarImage
-                  src={capture.profiles.avatar_url || undefined}
-                  alt={capture.profiles.username}
-                />
-                <AvatarFallback>
-                  <User className="w-6 h-6" />
-                </AvatarFallback>
-              </Avatar>
+              <Link href={`/users/${capture.profiles.username}`}>
+                <Avatar className="w-12 h-12 cursor-pointer hover:opacity-80 transition-opacity">
+                  <AvatarImage
+                    src={capture.profiles.avatar_url || undefined}
+                    alt={capture.profiles.username}
+                  />
+                  <AvatarFallback>
+                    <User className="w-6 h-6" />
+                  </AvatarFallback>
+                </Avatar>
+              </Link>
               <div className="flex-1">
-                <h2 className="font-semibold text-lg">
-                  {capture.profiles.username}
-                </h2>
+                <Link href={`/users/${capture.profiles.username}`}>
+                  <h2 className="font-semibold text-lg cursor-pointer hover:text-blue-600 transition-colors">
+                    {capture.profiles.username}
+                  </h2>
+                </Link>
                 <div className="flex items-center gap-2 text-sm text-gray-500">
                   <Clock className="w-4 h-4" />
                   <span>{getTimeAgo(capture.created_at)}</span>
@@ -166,7 +170,10 @@ export default async function PostDetailPage({ params }: PostDetailPageProps) {
         <Card className="rounded-none">
           <CardContent className="p-4">
             <div className="flex gap-3">
-              <Link href={`/profile/${capture.profiles.id}`} className="flex-1">
+              <Link
+                href={`/users/${capture.profiles.username}`}
+                className="flex-1"
+              >
                 <Button variant="outline" className="w-full">
                   <User className="w-4 h-4 mr-2" />
                   プロフィールを見る
