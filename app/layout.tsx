@@ -9,9 +9,8 @@ import LayoutNavigation from "@/components/layout-navigation";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "定点撮影SNS",
+  title: "Daily Capture",
   description: "同じ場所から時の流れを記録するSNSアプリ",
-  generator: "v0.dev",
 };
 
 export const viewport: Viewport = {
