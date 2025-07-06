@@ -16,6 +16,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { getAllCaptures } from "../../actions";
 import type { CaptureWithDetails } from "../../actions";
+import { formatDate, formatTime, getTimeAgo } from "@/lib/utils";
 
 export default function TimelineContent() {
   const [captures, setCaptures] = useState<CaptureWithDetails[]>([]);
@@ -79,58 +80,6 @@ export default function TimelineContent() {
 
   const handlePostClick = (captureId: string) => {
     router.push(`/posts/${captureId}`);
-  };
-
-  const isValidImageUrl = (url: string | null) => {
-    if (!url || url.trim() === "") {
-      return false;
-    }
-    try {
-      const urlObj = new URL(url);
-      return (
-        urlObj.hostname.includes("supabase.co") &&
-        urlObj.pathname.includes("/storage/v1/object/public/captures/")
-      );
-    } catch {
-      return false;
-    }
-  };
-
-  const formatDate = (date: Date | null) => {
-    if (!date) return "";
-    return new Date(date).toLocaleDateString("ja-JP", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
-
-  const formatTime = (date: Date | null) => {
-    if (!date) return "";
-    return new Date(date).toLocaleTimeString("ja-JP", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
-  const getTimeAgo = (date: Date | null) => {
-    if (!date) return "";
-    const now = new Date();
-    const past = new Date(date);
-    const diffInMinutes = Math.floor(
-      (now.getTime() - past.getTime()) / (1000 * 60)
-    );
-
-    if (diffInMinutes < 1) return "たった今";
-    if (diffInMinutes < 60) return `${diffInMinutes}分前`;
-
-    const diffInHours = Math.floor(diffInMinutes / 60);
-    if (diffInHours < 24) return `${diffInHours}時間前`;
-
-    const diffInDays = Math.floor(diffInHours / 24);
-    if (diffInDays < 7) return `${diffInDays}日前`;
-
-    return formatDate(date);
   };
 
   return (
@@ -232,26 +181,11 @@ export default function TimelineContent() {
                 {/* 画像 */}
                 <div className="relative aspect-square">
                   <Image
-                    src={
-                      isValidImageUrl(capture.media_url)
-                        ? capture.media_url
-                        : "/placeholder.jpg"
-                    }
+                    src={capture.media_url}
                     alt={capture.caption || "投稿画像"}
                     fill
                     className="object-cover"
                     sizes="100vw"
-                    onError={(e) => {
-                      console.error("画像の読み込みに失敗しました:", {
-                        src: capture.media_url,
-                        captureId: capture.id,
-                        isValidUrl: isValidImageUrl(capture.media_url),
-                        error: e,
-                      });
-                      // フォールバック画像に切り替え
-                      const target = e.target as HTMLImageElement;
-                      target.src = "/placeholder.jpg";
-                    }}
                     onLoad={() => {
                       console.log(
                         "画像の読み込みが完了しました:",
