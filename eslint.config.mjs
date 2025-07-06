@@ -9,7 +9,7 @@ import globals from "globals";
 export default defineConfig([
   // グローバルな無視設定
   {
-    ignores: [".next/**", "out/**", "build/**", "dist/**", "node_modules/**"],
+    ignores: [".next/**", "out/**", "build/**", "dist/**", "node_modules/**", "lib/generated/**"],
   },
 
   // JavaScript/TypeScript ファイル共通の設定
