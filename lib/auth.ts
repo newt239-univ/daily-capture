@@ -89,7 +89,8 @@ export async function signOut() {
   redirect("/signin");
 }
 
-export async function getSession() {
+// セキュリティ上の理由により、getSession()の代わりにgetAuthenticatedUser()を使用
+export async function getAuthenticatedUser() {
   const supabase = await createServerSupabaseClient();
 
   const {
@@ -101,12 +102,26 @@ export async function getSession() {
     return null;
   }
 
-  // ユーザーが認証されている場合のみセッション情報を返す
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  return user;
+}
 
-  return session;
+// 後方互換性のため残しているが、getAuthenticatedUser()の使用を推奨
+export async function getSession() {
+  const user = await getAuthenticatedUser();
+
+  if (!user) {
+    return null;
+  }
+
+  // セッション風のオブジェクトを返すが、実際にはユーザー情報のみを含む
+  return {
+    user,
+    access_token: null,
+    refresh_token: null,
+    expires_at: null,
+    expires_in: null,
+    token_type: "bearer" as const,
+  };
 }
 
 export async function getUser() {

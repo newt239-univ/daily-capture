@@ -27,17 +27,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 初期ユーザー認証の取得
+    // 初期ユーザー認証の取得（セキュリティのため getUser() のみ使用）
     supabase.auth.getUser().then(({ data: { user }, error }) => {
       if (error || !user) {
         setSession(null);
         setUser(null);
       } else {
-        // ユーザーが認証されている場合はセッション情報も取得
-        supabase.auth.getSession().then(({ data: { session } }) => {
-          setSession(session);
-          setUser(user);
-        });
+        // セッション情報は onAuthStateChange で安全に取得されるため、
+        // ここでは getSession() を使用せずユーザー情報のみ設定
+        setUser(user);
+        // セッションは初期状態では null のまま（onAuthStateChange で設定される）
+        setSession(null);
       }
       setLoading(false);
     });

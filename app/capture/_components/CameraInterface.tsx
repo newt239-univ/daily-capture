@@ -227,9 +227,19 @@ export default function CameraInterface() {
           </div>
         )}
 
+        {/* 全画面タップで撮影 */}
+        {!showPreview && !showUploadOption && stream && (
+          <button
+            className="absolute inset-0 w-full h-full focus:outline-none z-0"
+            onClick={capturePhoto}
+            disabled={isLoading}
+            aria-label="撮影する"
+          />
+        )}
+
         {/* 位置情報取得状況の表示 */}
         {!showPreview && !showUploadOption && (
-          <div className="absolute top-6 left-4 right-4 z-10">
+          <div className="absolute top-6 left-4 right-4 z-20">
             {currentLocation ? (
               <div className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-4 py-2 rounded-full shadow-lg backdrop-blur-sm bg-opacity-90">
                 <p className="text-sm font-medium text-center">
@@ -248,7 +258,7 @@ export default function CameraInterface() {
 
         {/* 撮影コントロール */}
         {!showPreview && !showUploadOption && (
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-6 pt-12">
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-6 pt-12 z-20">
             <div className="flex items-center justify-center space-x-8">
               {/* アップロードボタン */}
               <Button
@@ -286,16 +296,6 @@ export default function CameraInterface() {
               )}
             </div>
           </div>
-        )}
-
-        {/* 全画面タップで撮影 */}
-        {!showPreview && !showUploadOption && stream && (
-          <button
-            className="absolute inset-0 w-full h-full focus:outline-none"
-            onClick={capturePhoto}
-            disabled={isLoading}
-            aria-label="撮影する"
-          />
         )}
       </div>
 
