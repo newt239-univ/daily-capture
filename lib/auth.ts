@@ -57,6 +57,16 @@ export async function getSession() {
   const supabase = await createServerSupabaseClient();
 
   const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+
+  if (error || !user) {
+    return null;
+  }
+
+  // ユーザーが認証されている場合のみセッション情報を返す
+  const {
     data: { session },
   } = await supabase.auth.getSession();
 

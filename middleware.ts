@@ -1,82 +1,68 @@
-import { createServerClient } from '@supabase/ssr'
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { createServerClient } from "@supabase/ssr";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
     request: { headers: request.headers },
-  })
+  });
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(name: string) {
-          return request.cookies.get(name)?.value
+        getAll() {
+          return request.cookies.getAll();
         },
-        set(name: string, value: string, options: any) {
-          request.cookies.set({
-            name,
-            value,
-            ...options,
-          })
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) => {
+            request.cookies.set(name, value);
+          });
           response = NextResponse.next({
             request: { headers: request.headers },
-          })
-          response.cookies.set({
-            name,
-            value,
-            ...options,
-          })
-        },
-        remove(name: string, options: any) {
-          request.cookies.set({
-            name,
-            value: '',
-            ...options,
-          })
-          response = NextResponse.next({
-            request: { headers: request.headers },
-          })
-          response.cookies.set({
-            name,
-            value: '',
-            ...options,
-          })
+          });
+          cookiesToSet.forEach(({ name, value, options }) => {
+            response.cookies.set(name, value, options);
+          });
         },
       },
     }
-  )
+  );
 
   // 認証状態を確認
   const {
-    data: { session },
-  } = await supabase.auth.getSession()
-
-  // 認証が不要なパス（サインインページ、認証コールバック、静的ファイルなど）
-  const publicPaths = ['/signin']
-  const isPublicPath = publicPaths.some(path => request.nextUrl.pathname.startsWith(path))
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
 
   // 認証が必要なパス
-  const protectedPaths = ['/', '/capture', '/timeline', '/settings', '/register-location']
-  const isProtectedPath = protectedPaths.some(path => 
-    request.nextUrl.pathname === path || request.nextUrl.pathname.startsWith(path + '/')
-  )
+  const protectedPaths = [
+    "/",
+    "/capture",
+    "/timeline",
+    "/settings",
+    "/register-location",
+  ];
+  const isProtectedPath = protectedPaths.some(
+    (path) =>
+      request.nextUrl.pathname === path ||
+      request.nextUrl.pathname.startsWith(path + "/")
+  );
 
-  // 認証が必要なパスで、かつセッションが存在しない場合はサインインページにリダイレクト
-  if (isProtectedPath && !session) {
-    const redirectUrl = new URL('/signin', request.url)
-    return NextResponse.redirect(redirectUrl)
+  // 認証が必要なパスで、かつユーザーが認証されていない場合はサインインページにリダイレクト
+  if (isProtectedPath && (error || !user)) {
+    const redirectUrl = new URL("/signin", request.url);
+    return NextResponse.redirect(redirectUrl);
   }
 
   // 既にログインしている場合、サインインページにアクセスしたらホームページにリダイレクト
-  if (session && request.nextUrl.pathname === '/signin') {
-    const redirectUrl = new URL('/', request.url)
-    return NextResponse.redirect(redirectUrl)
+  if (user && !error && request.nextUrl.pathname === "/signin") {
+    const redirectUrl = new URL("/", request.url);
+    return NextResponse.redirect(redirectUrl);
   }
 
-  return response
+  return response;
 }
 
 export const config = {
@@ -88,6 +74,6 @@ export const config = {
      * - favicon.ico (favicon file)
      * - public (public files)
      */
-    '/((?!_next/static|_next/image|favicon.ico|public).*)',
+    "/((?!_next/static|_next/image|favicon.ico|public).*)",
   ],
-}
+};

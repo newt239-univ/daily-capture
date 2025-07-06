@@ -48,7 +48,12 @@ async function getUserProfile(userId: string) {
   };
 }
 
-export default async function ProfilePage() {
+export default async function ProfilePage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ success?: string; error?: string }>;
+}) {
+  const resolvedSearchParams = searchParams ? await searchParams : undefined;
   const session = await getSession();
 
   if (!session?.user) {
@@ -73,6 +78,20 @@ export default async function ProfilePage() {
             </Button>
           </Link>
         </div>
+
+        {/* Success/Error Messages */}
+        {resolvedSearchParams?.success && (
+          <div className="mx-4 mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+            <p className="text-green-600 text-sm">
+              {resolvedSearchParams.success}
+            </p>
+          </div>
+        )}
+        {resolvedSearchParams?.error && (
+          <div className="mx-4 mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-red-600 text-sm">{resolvedSearchParams.error}</p>
+          </div>
+        )}
 
         {/* Profile Info */}
         <div className="p-6">
@@ -100,11 +119,18 @@ export default async function ProfilePage() {
               </p>
             )}
             {userProfile.registeredLocation && (
-              <div className="flex items-center text-gray-500 text-sm">
+              <div className="flex items-center text-gray-500 text-sm mb-3">
                 <MapPin className="w-4 h-4 mr-1" />
                 <span>登録場所: {userProfile.registeredLocation}</span>
               </div>
             )}
+
+            {/* Edit Profile Button */}
+            <Link href="/profile/edit">
+              <Button variant="outline" size="sm" className="mt-2">
+                プロフィールを編集
+              </Button>
+            </Link>
           </div>
 
           {/* Stats */}
