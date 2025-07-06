@@ -4,12 +4,16 @@ import { Auth } from '@supabase/auth-ui-react'
 import { ThemeSupa } from '@supabase/auth-ui-shared'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function SignInPage() {
   const router = useRouter()
+  const [redirectUrl, setRedirectUrl] = useState<string>('')
 
   useEffect(() => {
+    // クライアントサイドでのみ window.location.origin を使用
+    setRedirectUrl(`${window.location.origin}/auth/callback`)
+
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (event === 'SIGNED_IN' && session) {
@@ -22,6 +26,20 @@ export default function SignInPage() {
       authListener.subscription.unsubscribe()
     }
   }, [router])
+
+  // redirectUrl が設定されるまでローディング表示
+  if (!redirectUrl) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+            <p className="text-gray-600">読み込み中...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
@@ -98,7 +116,7 @@ export default function SignInPage() {
             },
           }}
           providers={['google', 'github']}
-          redirectTo={`${window.location.origin}/auth/callback`}
+          redirectTo={redirectUrl}
           localization={{
             variables: {
               sign_in: {
