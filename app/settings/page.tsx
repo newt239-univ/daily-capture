@@ -1,10 +1,10 @@
 import { cookies } from "next/headers";
-import { MapPin, Trash2, Info, MessageSquare, ArrowRight } from "lucide-react";
+import { MapPin, Trash2, Info, MessageSquare, ArrowRight, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import BottomNavigation from "@/components/bottom-navigation";
 import React from "react";
-import { resetLocation, clearCache } from "./actions";
+import { resetLocation, clearCache, signOutAction } from "./actions";
 
 // 型定義を明示
 
@@ -145,6 +145,27 @@ export default async function SettingsPage() {
               ご意見・ご要望
               <ArrowRight className="w-4 h-4" />
             </Button>
+          </CardContent>
+        </Card>
+
+        {/* ログアウト */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <LogOut className="w-5 h-5" />
+              アカウント
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form action={signOutAction}>
+              <Button
+                variant="outline"
+                className="w-full text-red-600 hover:text-red-700 hover:bg-red-50"
+                type="submit"
+              >
+                ログアウト
+              </Button>
+            </form>
           </CardContent>
         </Card>
       </div>

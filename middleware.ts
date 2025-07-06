@@ -55,7 +55,7 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getSession()
 
   // 認証が不要なパス（サインインページ、認証コールバック、静的ファイルなど）
-  const publicPaths = ['/signin', '/auth/callback']
+  const publicPaths = ['/signin']
   const isPublicPath = publicPaths.some(path => request.nextUrl.pathname.startsWith(path))
 
   // 認証が必要なパス
