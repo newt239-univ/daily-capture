@@ -1,8 +1,17 @@
 import { cookies } from "next/headers";
-import { MapPin, Trash2, Info, MessageSquare, ArrowRight, LogOut } from "lucide-react";
+import {
+  MapPin,
+  Trash2,
+  Info,
+  MessageSquare,
+  ArrowRight,
+  LogOut,
+  ArrowLeft,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import BottomNavigation from "@/components/bottom-navigation";
+import FloatingActionButton from "@/components/floating-action-button";
+import Link from "next/link";
 import React from "react";
 import { resetLocation, clearCache, signOutAction } from "./actions";
 
@@ -51,7 +60,12 @@ export default async function SettingsPage() {
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       {/* ヘッダー */}
-      <div className="bg-white border-b p-4">
+      <div className="bg-white border-b p-4 flex items-center gap-3">
+        <Link href="/profile">
+          <Button variant="ghost" size="sm" className="p-2">
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+        </Link>
         <h1 className="text-xl font-bold">設定</h1>
       </div>
 
@@ -170,7 +184,7 @@ export default async function SettingsPage() {
         </Card>
       </div>
 
-      <BottomNavigation currentPage="settings" />
+      <FloatingActionButton />
     </div>
   );
 }

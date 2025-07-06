@@ -1,4 +1,5 @@
 import BottomNavigation from "@/components/bottom-navigation";
+import FloatingActionButton from "@/components/floating-action-button";
 import HeroSection from "./_components/HeroSection";
 import MainCTASection from "./_components/MainCTASection";
 import LatestTimelineSection from "./_components/LatestTimelineSection";
@@ -9,7 +10,8 @@ export default function HomePage() {
       <HeroSection />
       <MainCTASection />
       <LatestTimelineSection />
-      <BottomNavigation currentPage="home" />
+      <BottomNavigation currentPage="timeline" />
+      <FloatingActionButton />
     </div>
   );
 }

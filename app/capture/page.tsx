@@ -7,7 +7,7 @@ export default function CapturePage() {
     <div className="min-h-screen bg-black relative">
       <CaptureHeader />
       <CameraInterface />
-      <BottomNavigation currentPage="capture" />
+      <BottomNavigation currentPage="timeline" />
     </div>
   );
 }
