@@ -5,7 +5,7 @@ import TimelineContent from "./_components/TimelineContent";
 
 export default function TimelinePage() {
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <div className="min-h-screen pb-20">
       <TimelineHeader />
       <TimelineContent />
       <BottomNavigation currentPage="timeline" />

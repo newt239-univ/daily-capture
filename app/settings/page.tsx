@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import FloatingActionButton from "@/components/floating-action-button";
+import BottomNavigation from "@/components/bottom-navigation";
 import Link from "next/link";
 import React from "react";
 import { resetLocation, clearCache, signOutAction } from "./actions";
@@ -58,7 +59,7 @@ export default async function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <div className="min-h-screen pb-20">
       {/* ヘッダー */}
       <div className="bg-white border-b p-4 flex items-center gap-3">
         <Link href="/profile">
@@ -183,6 +184,9 @@ export default async function SettingsPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Bottom Navigation */}
+      <BottomNavigation currentPage="profile" />
 
       <FloatingActionButton />
     </div>

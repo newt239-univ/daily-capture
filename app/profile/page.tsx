@@ -7,8 +7,8 @@ import Link from "next/link";
 
 export default function ProfilePage() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-md mx-auto bg-white min-h-screen">
+    <div className="min-h-screen">
+      <div className="min-h-screen">
         {/* Header with Settings */}
         <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
           <h1 className="text-xl font-bold text-gray-900">プロフィール</h1>

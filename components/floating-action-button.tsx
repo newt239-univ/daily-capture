@@ -9,7 +9,7 @@ export default function FloatingActionButton() {
 
   return (
     <Button
-      className="fixed bottom-20 right-4 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg z-50"
+      className="absolute bottom-20 right-4 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg z-50"
       onClick={() => router.push("/capture")}
     >
       <Camera className="w-6 h-6" />
