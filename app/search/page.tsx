@@ -1,5 +1,3 @@
-import BottomNavigation from "@/components/bottom-navigation";
-import FloatingActionButton from "@/components/floating-action-button";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
@@ -33,12 +31,6 @@ export default function SearchPage() {
             </p>
           </div>
         </div>
-
-        {/* Bottom Navigation */}
-        <BottomNavigation currentPage="search" />
-
-        {/* Floating Action Button */}
-        <FloatingActionButton />
       </div>
     </div>
   );

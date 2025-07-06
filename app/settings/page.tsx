@@ -10,8 +10,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import FloatingActionButton from "@/components/floating-action-button";
-import BottomNavigation from "@/components/bottom-navigation";
+
 import Link from "next/link";
 import React from "react";
 import { resetLocation, clearCache, signOutAction } from "./actions";
@@ -184,11 +183,6 @@ export default async function SettingsPage() {
           </CardContent>
         </Card>
       </div>
-
-      {/* Bottom Navigation */}
-      <BottomNavigation currentPage="profile" />
-
-      <FloatingActionButton />
     </div>
   );
 }

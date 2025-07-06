@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "./contexts/AuthContext";
+import LayoutNavigation from "@/components/layout-navigation";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,6 +28,7 @@ function ConstrainedLayout({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-gray-100">
       <div className="max-w-md mx-auto min-h-screen bg-white relative">
         {children}
+        <LayoutNavigation />
       </div>
     </div>
   );

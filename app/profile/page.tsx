@@ -1,5 +1,3 @@
-import BottomNavigation from "@/components/bottom-navigation";
-import FloatingActionButton from "@/components/floating-action-button";
 import { Settings, Camera, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -198,12 +196,6 @@ export default async function ProfilePage({
               ))}
           </div>
         </div>
-
-        {/* Bottom Navigation */}
-        <BottomNavigation currentPage="profile" />
-
-        {/* Floating Action Button */}
-        <FloatingActionButton />
       </div>
     </div>
   );
