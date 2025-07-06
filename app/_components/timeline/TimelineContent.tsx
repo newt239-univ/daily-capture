@@ -1,15 +1,10 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Play, Share, Trash2, Download, Filter } from "lucide-react";
+import { Filter, Camera, MapPin, User, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Select,
   SelectContent,
@@ -17,143 +12,131 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Progress } from "@/components/ui/progress";
-import { useToast } from "@/hooks/use-toast";
 import Image from "next/image";
-
-interface Shot {
-  id: string;
-  timestamp: number;
-  imageUrl: string;
-  location: {
-    lat: number;
-    lng: number;
-    name: string;
-  };
-}
+import { useRouter } from "next/navigation";
+import { getAllCaptures } from "../../actions";
+import type { CaptureWithDetails } from "../../actions";
 
 export default function TimelineContent() {
-  const [shots, setShots] = useState<Shot[]>([]);
-  const [filteredShots, setFilteredShots] = useState<Shot[]>([]);
+  const [captures, setCaptures] = useState<CaptureWithDetails[]>([]);
+  const [filteredCaptures, setFilteredCaptures] = useState<
+    CaptureWithDetails[]
+  >([]);
   const [filterPeriod, setFilterPeriod] = useState("all");
-  const [showTimelapseModal, setShowTimelapseModal] = useState(false);
-  const [timelapseProgress, setTimelapseProgress] = useState(0);
-  const [timelapseUrl, setTimelapseUrl] = useState<string | null>(null);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
-  useEffect(() => {
-    const savedShots = localStorage.getItem("fixedPointShots");
-    if (savedShots) {
-      const parsedShots = JSON.parse(savedShots);
-      setShots(parsedShots);
-      setFilteredShots(parsedShots);
+  const loadCaptures = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const data = await getAllCaptures();
+      setCaptures(data);
+      setFilteredCaptures(data);
+    } catch (error) {
+      console.error("投稿の取得に失敗しました:", error);
+    } finally {
+      setIsLoading(false);
     }
   }, []);
 
-  const filterShots = useCallback(() => {
+  useEffect(() => {
+    loadCaptures();
+  }, [loadCaptures]);
+
+  const filterCaptures = useCallback(() => {
     const now = Date.now();
-    let filtered = shots;
+    let filtered = captures;
 
     switch (filterPeriod) {
       case "week":
-        filtered = shots.filter(
-          (shot) => now - shot.timestamp <= 7 * 24 * 60 * 60 * 1000
-        );
+        filtered = captures.filter((capture) => {
+          if (!capture.created_at) return false;
+          return (
+            now - new Date(capture.created_at).getTime() <=
+            7 * 24 * 60 * 60 * 1000
+          );
+        });
         break;
       case "month":
-        filtered = shots.filter(
-          (shot) => now - shot.timestamp <= 30 * 24 * 60 * 60 * 1000
-        );
+        filtered = captures.filter((capture) => {
+          if (!capture.created_at) return false;
+          return (
+            now - new Date(capture.created_at).getTime() <=
+            30 * 24 * 60 * 60 * 1000
+          );
+        });
         break;
       default:
-        filtered = shots;
+        filtered = captures;
     }
 
-    setFilteredShots(filtered.sort((a, b) => b.timestamp - a.timestamp));
-  }, [shots, filterPeriod]);
+    setFilteredCaptures(filtered);
+  }, [captures, filterPeriod]);
 
   useEffect(() => {
-    filterShots();
-  }, [shots, filterPeriod, filterShots]);
+    filterCaptures();
+  }, [captures, filterPeriod, filterCaptures]);
 
-  const generateTimelapse = async () => {
-    if (shots.length < 2) {
-      toast({
-        title: "エラー",
-        description: "タイムラプス生成には2枚以上の写真が必要です",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsGenerating(true);
-    setTimelapseProgress(0);
-    setShowTimelapseModal(true);
-
-    // 擬似的なタイムラプス生成プロセス
-    const interval = setInterval(() => {
-      setTimelapseProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setIsGenerating(false);
-          // 擬似的なタイムラプスURL（実際の実装では生成されたBlobURLを使用）
-          setTimelapseUrl("/placeholder.svg?height=400&width=600");
-          return 100;
-        }
-        return prev + 10;
-      });
-    }, 200);
+  const handlePostClick = (captureId: string) => {
+    router.push(`/posts/${captureId}`);
   };
 
-  const shareTimelapse = async () => {
-    if (!timelapseUrl) return;
-
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: "定点撮影タイムラプス",
-          text: "定点撮影で作成したタイムラプスです",
-          url: window.location.href,
-        });
-      } catch (error) {
-        console.error("共有に失敗しました:", error);
-      }
-    } else {
-      // Web Share API非対応の場合
-      toast({
-        title: "共有",
-        description: "タイムラプスのURLをクリップボードにコピーしました",
-      });
+  const isValidImageUrl = (url: string | null) => {
+    if (!url || url.trim() === "") {
+      return false;
+    }
+    try {
+      const urlObj = new URL(url);
+      return (
+        urlObj.hostname.includes("supabase.co") &&
+        urlObj.pathname.includes("/storage/v1/object/public/captures/")
+      );
+    } catch {
+      return false;
     }
   };
 
-  const deleteShot = (shotId: string) => {
-    const updatedShots = shots.filter((shot) => shot.id !== shotId);
-    setShots(updatedShots);
-    localStorage.setItem("fixedPointShots", JSON.stringify(updatedShots));
-    toast({
-      title: "削除完了",
-      description: "写真を削除しました",
+  const formatDate = (date: Date | null) => {
+    if (!date) return "";
+    return new Date(date).toLocaleDateString("ja-JP", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
+  };
+
+  const formatTime = (date: Date | null) => {
+    if (!date) return "";
+    return new Date(date).toLocaleTimeString("ja-JP", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  const getTimeAgo = (date: Date | null) => {
+    if (!date) return "";
+    const now = new Date();
+    const past = new Date(date);
+    const diffInMinutes = Math.floor(
+      (now.getTime() - past.getTime()) / (1000 * 60)
+    );
+
+    if (diffInMinutes < 1) return "たった今";
+    if (diffInMinutes < 60) return `${diffInMinutes}分前`;
+
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) return `${diffInHours}時間前`;
+
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) return `${diffInDays}日前`;
+
+    return formatDate(date);
   };
 
   return (
     <>
+      {/* フィルターヘッダー */}
       <div className="bg-white border-b p-4">
-        <div className="flex items-center justify-between mb-4">
-          <div />
-          <Button
-            onClick={generateTimelapse}
-            disabled={shots.length < 2}
-            className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
-          >
-            <Play className="w-4 h-4 mr-2" />
-            タイムラプス生成
-          </Button>
-        </div>
-
-        {/* フィルター */}
         <div className="flex items-center gap-2">
           <Filter className="w-4 h-4 text-gray-500" />
           <Select value={filterPeriod} onValueChange={setFilterPeriod}>
@@ -167,68 +150,134 @@ export default function TimelineContent() {
             </SelectContent>
           </Select>
           <span className="text-sm text-gray-500 ml-2">
-            {filteredShots.length}件
+            {filteredCaptures.length}件の投稿
           </span>
         </div>
       </div>
 
-      {/* タイムラインカード */}
+      {/* タイムライン */}
       <div className="p-4 space-y-4">
-        {filteredShots.length === 0 ? (
+        {isLoading ? (
+          // ローディング状態
+          <div className="space-y-4">
+            {[...Array(3)].map((_, i) => (
+              <Card key={i} className="overflow-hidden">
+                <CardContent className="p-4">
+                  <div className="flex items-center space-x-3 mb-3">
+                    <div className="w-10 h-10 bg-gray-200 rounded-full animate-pulse" />
+                    <div className="flex-1">
+                      <div className="h-4 bg-gray-200 rounded animate-pulse w-24 mb-1" />
+                      <div className="h-3 bg-gray-200 rounded animate-pulse w-16" />
+                    </div>
+                  </div>
+                  <div className="aspect-square bg-gray-200 rounded animate-pulse mb-3" />
+                  <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : filteredCaptures.length === 0 ? (
+          // 投稿がない場合
           <Card className="text-center py-12">
             <CardContent>
               <div className="text-gray-400 mb-4">
-                <Play className="w-12 h-12 mx-auto" />
+                <Camera className="w-12 h-12 mx-auto" />
               </div>
-              <p className="text-gray-600 mb-4">まだ撮影がありません</p>
-              <Button onClick={() => (window.location.href = "/capture")}>
-                撮影を開始
+              <p className="text-gray-600 mb-4">まだ投稿がありません</p>
+              <Button onClick={() => router.push("/capture")}>
+                投稿を開始
               </Button>
             </CardContent>
           </Card>
         ) : (
-          filteredShots.map((shot, index) => (
-            <Card key={shot.id} className="overflow-hidden">
+          // 投稿一覧
+          filteredCaptures.map((capture) => (
+            <Card
+              key={capture.id}
+              className="overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
+              onClick={() => handlePostClick(capture.id)}
+            >
               <CardContent className="p-0">
-                <div className="relative">
+                {/* ユーザー情報ヘッダー */}
+                <div className="p-4 pb-3">
+                  <div className="flex items-center space-x-3">
+                    <Avatar className="w-10 h-10">
+                      <AvatarImage
+                        src={capture.profiles.avatar_url || undefined}
+                        alt={capture.profiles.username}
+                      />
+                      <AvatarFallback>
+                        <User className="w-5 h-5" />
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <p className="font-semibold text-sm">
+                          {capture.profiles.username}
+                        </p>
+                        <span className="text-gray-400">•</span>
+                        <p className="text-gray-500 text-xs flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
+                          {getTimeAgo(capture.created_at)}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-1 text-xs text-gray-500">
+                        <MapPin className="w-3 h-3" />
+                        <span>{capture.spots.name}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 画像 */}
+                <div className="relative aspect-square">
                   <Image
-                    src={shot.imageUrl || "/placeholder.svg"}
-                    alt={`撮影 ${index + 1}`}
+                    src={
+                      isValidImageUrl(capture.media_url)
+                        ? capture.media_url
+                        : "/placeholder.jpg"
+                    }
+                    alt={capture.caption || "投稿画像"}
                     fill
                     className="object-cover"
                     sizes="100vw"
-                    style={{ objectFit: "cover" }}
-                    priority={index === 0}
+                    onError={(e) => {
+                      console.error("画像の読み込みに失敗しました:", {
+                        src: capture.media_url,
+                        captureId: capture.id,
+                        isValidUrl: isValidImageUrl(capture.media_url),
+                        error: e,
+                      });
+                      // フォールバック画像に切り替え
+                      const target = e.target as HTMLImageElement;
+                      target.src = "/placeholder.jpg";
+                    }}
+                    onLoad={() => {
+                      console.log(
+                        "画像の読み込みが完了しました:",
+                        capture.media_url
+                      );
+                    }}
                   />
-                  <div className="absolute top-2 right-2 bg-black/50 text-white px-2 py-1 rounded text-xs">
-                    #{filteredShots.length - index}
-                  </div>
                 </div>
-                <div className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium">
-                        {new Date(shot.timestamp).toLocaleDateString("ja-JP", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        {new Date(shot.timestamp).toLocaleTimeString("ja-JP", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </p>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => deleteShot(shot.id)}
-                      className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
+
+                {/* キャプション */}
+                {capture.caption && (
+                  <div className="p-4 pt-3">
+                    <p className="text-sm text-gray-800">{capture.caption}</p>
+                  </div>
+                )}
+
+                {/* 投稿詳細 */}
+                <div className="px-4 pb-4">
+                  <div className="flex items-center justify-between text-xs text-gray-500">
+                    <span>
+                      {formatDate(capture.created_at)}{" "}
+                      {formatTime(capture.created_at)}
+                    </span>
+                    <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                      {capture.media_type === "photo" ? "写真" : "動画"}
+                    </span>
                   </div>
                 </div>
               </CardContent>
@@ -236,43 +285,6 @@ export default function TimelineContent() {
           ))
         )}
       </div>
-
-      {/* タイムラプス生成モーダル */}
-      <Dialog open={showTimelapseModal} onOpenChange={setShowTimelapseModal}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader>
-            <DialogTitle className="text-center">
-              {isGenerating ? "タイムラプス生成中..." : "タイムラプス完成！"}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            {isGenerating ? (
-              <div className="space-y-3">
-                <Progress value={timelapseProgress} className="w-full" />
-                <p className="text-center text-sm text-gray-600">
-                  {timelapseProgress}% 完了
-                </p>
-              </div>
-            ) : timelapseUrl ? (
-              <div className="space-y-4">
-                <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
-                  <Play className="w-12 h-12 text-gray-400" />
-                </div>
-                <div className="flex gap-2">
-                  <Button onClick={shareTimelapse} className="flex-1">
-                    <Share className="w-4 h-4 mr-2" />
-                    共有
-                  </Button>
-                  <Button variant="outline" className="flex-1">
-                    <Download className="w-4 h-4 mr-2" />
-                    保存
-                  </Button>
-                </div>
-              </div>
-            ) : null}
-          </div>
-        </DialogContent>
-      </Dialog>
     </>
   );
 }
