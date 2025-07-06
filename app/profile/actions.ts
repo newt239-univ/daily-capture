@@ -42,10 +42,6 @@ export async function updateProfile(formData: FormData) {
         avatar_url: avatarUrl?.trim() || null,
       },
     });
-
-    redirect(
-      "/profile?success=" + encodeURIComponent("プロフィールを更新しました")
-    );
   } catch (error) {
     console.error("Profile update error:", error);
     redirect(
@@ -53,4 +49,9 @@ export async function updateProfile(formData: FormData) {
         encodeURIComponent("プロフィールの更新に失敗しました")
     );
   }
+
+  // プロフィール更新が成功した場合のリダイレクト
+  redirect(
+    "/profile?success=" + encodeURIComponent("プロフィールを更新しました")
+  );
 }

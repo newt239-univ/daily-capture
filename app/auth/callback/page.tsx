@@ -56,7 +56,7 @@ export default async function AuthCallbackPage({
         .eq("id", data.user.id)
         .single();
 
-      // プロファイルが存在しない場合は作成（フォールバック処理）
+      // プロファイルが存在しない場合は作成
       if (!existingProfile) {
         const username = data.user.user_metadata.username;
 
@@ -67,7 +67,6 @@ export default async function AuthCallbackPage({
           );
         }
 
-        // 通常はサインアップ時に作成されているはずだが、念のため作成
         const { error: profileError } = await supabase.from("profiles").insert({
           id: data.user.id,
           username: username,
@@ -75,10 +74,12 @@ export default async function AuthCallbackPage({
           bio: null,
         });
 
-        // プロファイル作成エラーは警告のみとし、ログインは継続
         if (profileError) {
-          console.warn("Profile creation fallback failed:", profileError);
-          // プロファイル作成に失敗してもログインは継続する
+          console.error("Profile creation error:", profileError);
+          redirect(
+            "/signin?error=" +
+              encodeURIComponent("プロファイルの作成に失敗しました")
+          );
         }
       }
 

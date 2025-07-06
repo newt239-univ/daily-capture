@@ -51,12 +51,6 @@ export async function signUpAction(formData: FormData): Promise<void> {
 
   try {
     await signUp(email, password, username);
-    redirect(
-      "/signup?message=" +
-        encodeURIComponent(
-          "確認メールを送信しました。メールをご確認の上、リンクをクリックしてアカウントを有効化してください。"
-        )
-    );
   } catch (error) {
     let errorMessage = "アカウント作成に失敗しました";
 
@@ -85,4 +79,12 @@ export async function signUpAction(formData: FormData): Promise<void> {
 
     redirect("/signup?error=" + encodeURIComponent(errorMessage));
   }
+
+  // signUpが成功した場合のリダイレクト
+  redirect(
+    "/signup?message=" +
+      encodeURIComponent(
+        "確認メールを送信しました。メールをご確認の上、リンクをクリックしてアカウントを有効化してください。"
+      )
+  );
 }
