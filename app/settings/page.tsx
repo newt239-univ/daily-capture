@@ -73,7 +73,7 @@ export default async function SettingsPage() {
                 </Button>
               </form>
               {registeredLocation && (
-                <form action={resetLocation} method="post">
+                <form action={resetLocation}>
                   <Button
                     variant="outline"
                     className="text-red-600 hover:text-red-700 hover:bg-red-50"
@@ -96,7 +96,7 @@ export default async function SettingsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <form action={clearCache} method="post">
+            <form action={clearCache}>
               <Button
                 variant="outline"
                 className="w-full text-red-600 hover:text-red-700 hover:bg-red-50"
@@ -117,6 +117,10 @@ export default async function SettingsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
+            <div className="flex items-center justify-between py-2">
+              <span>アプリ名</span>
+              <span className="text-gray-600">Daily Capture</span>
+            </div>
             <div className="flex items-center justify-between py-2">
               <span>バージョン</span>
               <span className="text-gray-600">1.0.0</span>
