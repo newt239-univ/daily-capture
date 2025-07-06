@@ -55,3 +55,45 @@ export async function updateProfile(formData: FormData) {
     "/profile?success=" + encodeURIComponent("プロフィールを更新しました")
   );
 }
+
+export async function getFollowers(userId: string) {
+  const followers = await prisma.follows.findMany({
+    where: { following_id: userId },
+    include: {
+      profiles_follows_follower_idToprofiles: {
+        select: {
+          id: true,
+          username: true,
+          avatar_url: true,
+          bio: true,
+        },
+      },
+    },
+    orderBy: { created_at: "desc" },
+  });
+
+  return followers.map(
+    (follow) => follow.profiles_follows_follower_idToprofiles
+  );
+}
+
+export async function getFollowing(userId: string) {
+  const following = await prisma.follows.findMany({
+    where: { follower_id: userId },
+    include: {
+      profiles_follows_following_idToprofiles: {
+        select: {
+          id: true,
+          username: true,
+          avatar_url: true,
+          bio: true,
+        },
+      },
+    },
+    orderBy: { created_at: "desc" },
+  });
+
+  return following.map(
+    (follow) => follow.profiles_follows_following_idToprofiles
+  );
+}

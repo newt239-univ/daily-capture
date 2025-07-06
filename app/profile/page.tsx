@@ -139,18 +139,24 @@ export default async function ProfilePage({
               </div>
               <div className="text-sm text-gray-500">投稿</div>
             </div>
-            <div className="text-center">
+            <Link
+              href="/profile/followers"
+              className="text-center hover:bg-gray-50 rounded-lg p-2 transition-colors"
+            >
               <div className="text-2xl font-bold text-gray-900">
                 {userProfile.followerCount}
               </div>
               <div className="text-sm text-gray-500">フォロワー</div>
-            </div>
-            <div className="text-center">
+            </Link>
+            <Link
+              href="/profile/follows"
+              className="text-center hover:bg-gray-50 rounded-lg p-2 transition-colors"
+            >
               <div className="text-2xl font-bold text-gray-900">
                 {userProfile.followingCount}
               </div>
               <div className="text-sm text-gray-500">フォロー中</div>
-            </div>
+            </Link>
           </div>
         </div>
 
@@ -162,9 +168,10 @@ export default async function ProfilePage({
           <div className="grid grid-cols-3 gap-1">
             {userProfile.captures.length > 0
               ? userProfile.captures.map((capture) => (
-                  <div
+                  <Link
                     key={capture.id}
-                    className="aspect-square bg-gray-200 rounded overflow-hidden relative"
+                    href={`/posts/${capture.id}`}
+                    className="aspect-square bg-gray-200 rounded overflow-hidden relative hover:opacity-80 transition-opacity"
                   >
                     <Image
                       src={capture.media_url}
@@ -173,7 +180,7 @@ export default async function ProfilePage({
                       fill
                       sizes="(max-width: 768px) 33vw, 25vw"
                     />
-                  </div>
+                  </Link>
                 ))
               : // 投稿がない場合のプレースホルダー
                 [...Array(6)].map((_, i) => (

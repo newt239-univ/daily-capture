@@ -217,9 +217,10 @@ export default async function UserPage({
         <div className="grid grid-cols-3 gap-1">
           {userProfile.captures.length > 0
             ? userProfile.captures.map((capture) => (
-                <div
+                <Link
                   key={capture.id}
-                  className="aspect-square bg-gray-200 rounded overflow-hidden relative"
+                  href={`/posts/${capture.id}`}
+                  className="aspect-square bg-gray-200 rounded overflow-hidden relative hover:opacity-80 transition-opacity"
                 >
                   <Image
                     src={capture.media_url}
@@ -228,7 +229,7 @@ export default async function UserPage({
                     fill
                     sizes="(max-width: 768px) 33vw, 25vw"
                   />
-                </div>
+                </Link>
               ))
             : // 投稿がない場合のプレースホルダー
               [...Array(6)].map((_, i) => (
