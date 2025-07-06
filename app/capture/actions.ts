@@ -6,7 +6,8 @@ import { prisma } from "@/lib/prisma";
 
 export type CaptureData = {
   imageFile: File;
-  spotId: string;
+  lat?: number;
+  lng?: number;
   caption?: string;
 };
 
@@ -25,11 +26,35 @@ export async function createCapture(formData: FormData) {
 
     // FormDataから値を取得
     const imageFile = formData.get("imageFile") as File;
-    const spotId = formData.get("spotId") as string | null;
+    const latStr = formData.get("lat") as string | null;
+    const lngStr = formData.get("lng") as string | null;
     const caption = formData.get("caption") as string;
 
     if (!imageFile) {
       throw new Error("画像ファイルは必須です");
+    }
+
+    // 位置情報を数値に変換
+    let lat: number | null = null;
+    let lng: number | null = null;
+
+    if (latStr && lngStr) {
+      lat = parseFloat(latStr);
+      lng = parseFloat(lngStr);
+
+      // 有効な位置情報かチェック
+      if (
+        isNaN(lat) ||
+        isNaN(lng) ||
+        lat < -90 ||
+        lat > 90 ||
+        lng < -180 ||
+        lng > 180
+      ) {
+        console.error("無効な位置情報:", { lat, lng });
+        lat = null;
+        lng = null;
+      }
     }
 
     // ファイル名を生成（timestampとユーザーIDを含む）
@@ -56,39 +81,50 @@ export async function createCapture(formData: FormData) {
       data: { publicUrl },
     } = supabase.storage.from("captures").getPublicUrl(uploadData.path);
 
-    // スポットIDがない場合は新しいスポットを作成
-    let actualSpotId: string = spotId || "";
-    if (!spotId) {
-      // デフォルトのスポット名を生成
-      const now = new Date();
-      const defaultSpotName = `撮影地点 ${now.getFullYear()}/${(
-        now.getMonth() + 1
-      )
+    // 新しいスポットを作成
+    const now = new Date();
+    let spotName: string;
+    let spotLat: number;
+    let spotLng: number;
+
+    if (lat !== null && lng !== null) {
+      // 位置情報がある場合：日時と簡易的な地名で命名
+      const timeString = `${now.getFullYear()}/${(now.getMonth() + 1)
+        .toString()
+        .padStart(2, "0")}/${now.getDate().toString().padStart(2, "0")} ${now
+        .getHours()
+        .toString()
+        .padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}`;
+
+      spotName = `撮影地点 ${timeString}`;
+      spotLat = lat;
+      spotLng = lng;
+    } else {
+      // 位置情報がない場合：デフォルトの位置情報（東京駅）を使用
+      const dateString = `${now.getFullYear()}/${(now.getMonth() + 1)
         .toString()
         .padStart(2, "0")}/${now.getDate().toString().padStart(2, "0")}`;
 
-      // デフォルトの位置情報（東京駅）を使用
-      const defaultLat = 35.6812;
-      const defaultLng = 139.7671;
-
-      const newSpot = await prisma.spots.create({
-        data: {
-          user_id: user.id,
-          name: defaultSpotName,
-          lat: defaultLat,
-          lng: defaultLng,
-          reference_image_url: publicUrl, // 撮影した画像をリファレンス画像として使用
-        },
-      });
-
-      actualSpotId = newSpot.id;
+      spotName = `撮影地点 ${dateString}`;
+      spotLat = 35.6812; // 東京駅
+      spotLng = 139.7671; // 東京駅
     }
+
+    const newSpot = await prisma.spots.create({
+      data: {
+        user_id: user.id,
+        name: spotName,
+        lat: spotLat,
+        lng: spotLng,
+        reference_image_url: publicUrl, // 撮影した画像をリファレンス画像として使用
+      },
+    });
 
     // DBにcaptureデータを挿入
     const capture = await prisma.captures.create({
       data: {
         user_id: user.id,
-        spot_id: actualSpotId,
+        spot_id: newSpot.id,
         media_url: publicUrl,
         media_type: "photo",
         caption: caption || null,
@@ -96,7 +132,7 @@ export async function createCapture(formData: FormData) {
     });
 
     revalidatePath("/");
-    return { success: true, captureId: capture.id };
+    return { success: true, captureId: capture.id, spotId: newSpot.id };
   } catch (error) {
     console.error("Capture creation error:", error);
     throw new Error(

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { RotateCcw, Check } from "lucide-react";
+import { RotateCcw, Check, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,18 +11,14 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import Image from "next/image";
 import { createCapture } from "../actions";
-import { Decimal } from "@prisma/client/runtime/library";
 
-type Spot = {
-  id: string;
-  name: string;
-  lat: Decimal | null;
-  lng: Decimal | null;
-  user_id: string;
-  reference_image_url: string | null;
-  created_at: Date | null;
+type GeolocationData = {
+  lat: number;
+  lng: number;
+  timestamp: number;
 };
 
 type PreviewModalProps = {
@@ -31,7 +27,7 @@ type PreviewModalProps = {
   capturedImage: string | null;
   uploadedImage: File | null;
   imageSource: "camera" | "upload";
-  userSpots: Spot[];
+  currentLocation: GeolocationData | null;
   onSuccess: () => void;
 };
 
@@ -41,18 +37,15 @@ export default function PreviewModal({
   capturedImage,
   uploadedImage,
   imageSource,
-  userSpots,
+  currentLocation,
   onSuccess,
 }: PreviewModalProps) {
-  const [selectedSpotId, setSelectedSpotId] = useState<string>(
-    userSpots.length > 0 ? userSpots[0].id : ""
-  );
   const [caption, setCaption] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSave = async () => {
-    if ((!capturedImage && !uploadedImage) || !selectedSpotId) {
-      alert("画像とスポットの選択が必要です");
+    if (!capturedImage && !uploadedImage) {
+      alert("画像の処理に失敗しました");
       return;
     }
 
@@ -77,7 +70,14 @@ export default function PreviewModal({
       // FormData を作成
       const formData = new FormData();
       formData.append("imageFile", fileToUpload);
-      formData.append("spotId", selectedSpotId);
+
+      // 位置情報がある場合は追加
+      if (currentLocation) {
+        formData.append("lat", currentLocation.lat.toString());
+        formData.append("lng", currentLocation.lng.toString());
+      }
+
+      // キャプションがある場合は追加
       if (caption) {
         formData.append("caption", caption);
       }
@@ -126,26 +126,32 @@ export default function PreviewModal({
           )}
 
           <div className="space-y-4 mt-4">
-            {/* スポット選択 */}
-            {userSpots.length > 0 && (
-              <div>
-                <Label htmlFor="spot-select" className="text-white text-sm">
-                  撮影スポット
-                </Label>
-                <select
-                  id="spot-select"
-                  value={selectedSpotId}
-                  onChange={(e) => setSelectedSpotId(e.target.value)}
-                  className="w-full mt-1 p-2 rounded border bg-white text-black"
-                >
-                  {userSpots.map((spot) => (
-                    <option key={spot.id} value={spot.id}>
-                      {spot.name}
-                    </option>
-                  ))}
-                </select>
+            {/* 位置情報の表示 */}
+            <div>
+              <Label className="text-white text-sm">撮影位置</Label>
+              <div className="mt-1">
+                {currentLocation ? (
+                  <div className="p-3 bg-green-900/30 border border-green-500/30 rounded-lg">
+                    <div className="flex items-center space-x-2">
+                      <MapPin className="w-4 h-4 text-green-400" />
+                      <div className="text-sm text-green-100">
+                        <p className="font-medium">位置情報を取得済み</p>
+                        <p className="text-xs text-green-300 mt-1">
+                          新しいスポットが自動作成されます
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <Alert>
+                    <MapPin className="h-4 w-4" />
+                    <AlertDescription className="text-sm">
+                      位置情報が利用できません。デフォルトの位置でスポットが作成されます。
+                    </AlertDescription>
+                  </Alert>
+                )}
               </div>
-            )}
+            </div>
 
             {/* キャプション入力 */}
             <div>
@@ -176,7 +182,7 @@ export default function PreviewModal({
             <Button
               className="flex-1"
               onClick={handleSave}
-              disabled={isSubmitting || !selectedSpotId}
+              disabled={isSubmitting}
             >
               <Check className="w-4 h-4 mr-2" />
               {isSubmitting ? "保存中..." : "投稿"}

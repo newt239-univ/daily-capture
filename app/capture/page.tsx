@@ -10,7 +10,7 @@ export default async function CapturePage() {
   }
 
   return (
-    <div className="min-h-screen bg-black relative w-screen -mx-auto">
+    <div className="min-h-screen bg-black relative -mx-auto flex flex-col w-full">
       <CameraInterface />
     </div>
   );
