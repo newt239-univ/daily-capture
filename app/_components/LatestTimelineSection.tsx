@@ -72,7 +72,7 @@ export default function LatestTimelineSection() {
           <Button
             variant="outline"
             className="w-full"
-            onClick={() => router.push("/timeline")}
+            onClick={() => router.push("/")}
           >
             すべて見る
           </Button>

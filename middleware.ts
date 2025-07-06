@@ -37,13 +37,7 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   // 認証が必要なパス
-  const protectedPaths = [
-    "/",
-    "/capture",
-    "/timeline",
-    "/settings",
-    "/register-location",
-  ];
+  const protectedPaths = ["/", "/capture", "/settings", "/register-location"];
   const isProtectedPath = protectedPaths.some(
     (path) =>
       request.nextUrl.pathname === path ||

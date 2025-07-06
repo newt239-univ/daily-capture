@@ -72,3 +72,18 @@ export async function getSession() {
 
   return session;
 }
+
+export async function getUser() {
+  const supabase = await createServerSupabaseClient();
+
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+
+  if (error || !user) {
+    return null;
+  }
+
+  return user;
+}

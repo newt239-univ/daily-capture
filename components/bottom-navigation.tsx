@@ -14,7 +14,7 @@ export default function BottomNavigation({
   const router = useRouter();
 
   const navItems = [
-    { id: "timeline", icon: Clock, label: "タイムライン", path: "/timeline" },
+    { id: "timeline", icon: Clock, label: "タイムライン", path: "/" },
     { id: "search", icon: Search, label: "検索", path: "/search" },
     { id: "profile", icon: User, label: "プロフィール", path: "/profile" },
   ];
