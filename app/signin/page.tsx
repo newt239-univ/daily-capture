@@ -1,6 +1,11 @@
-import { signInAction } from './actions'
+import { signInAction } from "./actions";
 
-export default function SignInPage({ searchParams }: { searchParams: { error?: string } }) {
+export default async function SignInPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const { error } = await searchParams;
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
@@ -11,15 +16,18 @@ export default function SignInPage({ searchParams }: { searchParams: { error?: s
           <p className="text-gray-600">毎日同じ場所の写真を共有するSNS</p>
         </div>
 
-        {searchParams.error && (
+        {error && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-red-600 text-sm">{searchParams.error}</p>
+            <p className="text-red-600 text-sm">{error}</p>
           </div>
         )}
 
         <form action={signInAction} className="space-y-6">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               メールアドレス
             </label>
             <input
@@ -33,7 +41,10 @@ export default function SignInPage({ searchParams }: { searchParams: { error?: s
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               パスワード
             </label>
             <input
@@ -53,6 +64,18 @@ export default function SignInPage({ searchParams }: { searchParams: { error?: s
             サインイン
           </button>
         </form>
+
+        <div className="mt-6 text-center">
+          <p className="text-sm text-gray-600">
+            アカウントをお持ちでない方は{" "}
+            <a
+              href="/signup"
+              className="text-blue-600 hover:text-blue-700 font-medium"
+            >
+              アカウント作成
+            </a>
+          </p>
+        </div>
       </div>
     </div>
   );
