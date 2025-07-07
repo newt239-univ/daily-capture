@@ -1,8 +1,7 @@
 "use client";
 
 import { Clock, Search, User } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface BottomNavigationProps {
   currentPage: "timeline" | "search" | "profile";
@@ -11,8 +10,6 @@ interface BottomNavigationProps {
 export default function BottomNavigation({
   currentPage,
 }: BottomNavigationProps) {
-  const router = useRouter();
-
   const navItems = [
     { id: "timeline", icon: Clock, label: "タイムライン", path: "/" },
     { id: "search", icon: Search, label: "検索", path: "/search" },
@@ -27,20 +24,18 @@ export default function BottomNavigation({
           const isActive = currentPage === item.id;
 
           return (
-            <Button
+            <Link
               key={item.id}
-              variant="ghost"
-              size="sm"
-              className={`flex-1 flex flex-col items-center gap-1 h-auto py-2 ${
+              href={item.path}
+              className={`flex-1 flex flex-col items-center gap-1 h-auto py-2 px-3 rounded-md transition-colors ${
                 isActive
                   ? "text-blue-600 bg-blue-50"
                   : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
               }`}
-              onClick={() => router.push(item.path)}
             >
               <Icon className="w-5 h-5" />
               <span className="text-xs font-medium">{item.label}</span>
-            </Button>
+            </Link>
           );
         })}
       </div>

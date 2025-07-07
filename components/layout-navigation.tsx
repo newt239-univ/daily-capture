@@ -18,6 +18,7 @@ export default function LayoutNavigation() {
   // 特定のページではナビゲーションを表示しない
   const hideNavigation =
     pathname === "/signin" ||
+    pathname === "/signup" ||
     pathname === "/register-location" ||
     pathname === "/capture" ||
     pathname.startsWith("/auth/");

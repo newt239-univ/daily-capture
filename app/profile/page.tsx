@@ -1,4 +1,4 @@
-import { Settings, Camera, MapPin } from "lucide-react";
+import { Settings, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
@@ -115,12 +115,6 @@ export default async function ProfilePage({
               <p className="text-gray-600 text-sm text-center mb-2">
                 {userProfile.bio}
               </p>
-            )}
-            {userProfile.registeredLocation && (
-              <div className="flex items-center text-gray-500 text-sm mb-3">
-                <MapPin className="w-4 h-4 mr-1" />
-                <span>登録場所: {userProfile.registeredLocation}</span>
-              </div>
             )}
 
             {/* Edit Profile Button */}
