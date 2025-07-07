@@ -76,6 +76,15 @@ export default async function SignInPage({
             </a>
           </p>
         </div>
+        <div className="mt-6 text-center">
+          <p className="text-sm text-gray-600">
+            テスト用アカウント
+            <br />
+            Email: test@example.com
+            <br />
+            Password: test
+          </p>
+        </div>
       </div>
     </div>
   );
