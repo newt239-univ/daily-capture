@@ -10,6 +10,7 @@ export default function SearchPageClient() {
   const [results, setResults] = useState<SearchResult>({
     users: [],
     spots: [],
+    posts: [],
   });
   const [isLoading, setIsLoading] = useState(false);
   const [currentQuery, setCurrentQuery] = useState("");
@@ -18,7 +19,7 @@ export default function SearchPageClient() {
     setCurrentQuery(query);
 
     if (!query.trim()) {
-      setResults({ users: [], spots: [] });
+      setResults({ users: [], spots: [], posts: [] });
       return;
     }
 
@@ -28,7 +29,7 @@ export default function SearchPageClient() {
       setResults(searchResults);
     } catch (error) {
       console.error("検索エラー:", error);
-      setResults({ users: [], spots: [] });
+      setResults({ users: [], spots: [], posts: [] });
     } finally {
       setIsLoading(false);
     }
