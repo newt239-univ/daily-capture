@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+
 import BottomNavigation from "./bottom-navigation";
 import FloatingActionButton from "./floating-action-button";
 

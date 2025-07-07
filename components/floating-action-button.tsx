@@ -1,8 +1,10 @@
 "use client";
 
-import { Camera } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+
+import { Camera } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 
 export default function FloatingActionButton() {
   const router = useRouter();

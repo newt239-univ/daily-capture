@@ -1,9 +1,11 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+
+import { Search } from "lucide-react";
+
+import { Input } from "@/components/ui/input";
 
 type SearchInputProps = {
   onSearch: (query: string) => void;

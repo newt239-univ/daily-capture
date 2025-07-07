@@ -1,7 +1,8 @@
 "use server";
 
-import { signIn } from "@/lib/auth";
 import { redirect } from "next/navigation";
+
+import { signIn } from "@/lib/auth";
 
 export async function signInAction(formData: FormData) {
   const email = formData.get("email") as string;

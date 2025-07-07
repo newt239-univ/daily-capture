@@ -1,10 +1,13 @@
 "use client";
 
 import { useCallback, useState } from "react";
+
+import { Search } from "lucide-react";
+
 import { searchContent, SearchResult } from "../actions";
+
 import SearchInput from "./SearchInput";
 import SearchResults from "./SearchResults";
-import { Search } from "lucide-react";
 
 export default function SearchPageClient() {
   const [results, setResults] = useState<SearchResult>({

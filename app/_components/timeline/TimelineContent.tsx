@@ -1,10 +1,18 @@
 "use client";
 
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useState, useEffect, useCallback } from "react";
+
 import { Filter, Camera, MapPin, User, Clock } from "lucide-react";
+
+import { getAllCaptures } from "../../actions";
+
+import type { CaptureWithDetails } from "../../actions";
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Select,
   SelectContent,
@@ -12,10 +20,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { getAllCaptures } from "../../actions";
-import type { CaptureWithDetails } from "../../actions";
 import { formatDate, formatTime, getTimeAgo } from "@/lib/utils";
 
 export default function TimelineContent() {

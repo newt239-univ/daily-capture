@@ -1,12 +1,17 @@
-import { ArrowLeft, Camera, MapPin, UserPlus, UserMinus } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
+import { redirect, notFound } from "next/navigation";
+
+import { ArrowLeft, Camera, MapPin, UserPlus, UserMinus } from "lucide-react";
+
+import { followUser, unfollowUser } from "./actions";
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { redirect, notFound } from "next/navigation";
-import { followUser, unfollowUser } from "./actions";
+
+
 
 type UserProfileData = {
   id: string;

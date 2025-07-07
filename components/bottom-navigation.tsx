@@ -1,7 +1,8 @@
 "use client";
 
-import { Clock, Search, User } from "lucide-react";
 import Link from "next/link";
+
+import { Clock, Search, User } from "lucide-react";
 
 interface BottomNavigationProps {
   currentPage: "timeline" | "search" | "profile";

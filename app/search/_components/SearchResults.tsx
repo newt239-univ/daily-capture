@@ -1,9 +1,13 @@
+import Image from "next/image";
+import Link from "next/link";
+
+import { MapPin, User, Camera } from "lucide-react";
+
+import { SearchResult } from "../actions";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
-import { MapPin, User, Camera } from "lucide-react";
-import Link from "next/link";
-import Image from "next/image";
-import { SearchResult } from "../actions";
+
 
 type SearchResultsProps = {
   results: SearchResult;

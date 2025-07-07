@@ -1,5 +1,5 @@
-import TimelineHeader from "./_components/timeline/TimelineHeader";
 import TimelineContent from "./_components/timeline/TimelineContent";
+import TimelineHeader from "./_components/timeline/TimelineHeader";
 
 export default function HomePage() {
   return (

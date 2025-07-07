@@ -1,7 +1,8 @@
 "use server";
 
-import { signUp } from "@/lib/auth";
 import { redirect } from "next/navigation";
+
+import { signUp } from "@/lib/auth";
 
 export async function signUpAction(formData: FormData): Promise<void> {
   const email = formData.get("email") as string;

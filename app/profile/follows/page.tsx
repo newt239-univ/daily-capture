@@ -1,10 +1,15 @@
-import { ArrowLeft, User } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
-import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
+
+import { ArrowLeft, User } from "lucide-react";
+
 import { getFollowing } from "../actions";
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { getSession } from "@/lib/auth";
+
+
 
 export default async function FollowsPage() {
   const session = await getSession();

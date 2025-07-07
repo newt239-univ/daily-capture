@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
-import { getUser } from "@/lib/auth";
+
 import CameraInterface from "./_components/CameraInterface";
+
+import { getUser } from "@/lib/auth";
 
 export default async function CapturePage() {
   const user = await getUser();

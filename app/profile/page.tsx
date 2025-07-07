@@ -1,11 +1,14 @@
-import { Settings, Camera } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+
+import { Settings, Camera } from "lucide-react";
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { redirect } from "next/navigation";
+
 
 async function getUserProfile(userId: string) {
   const profile = await prisma.profiles.findUnique({

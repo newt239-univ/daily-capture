@@ -1,8 +1,9 @@
 "use server";
 
+import { redirect } from "next/navigation";
+
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { redirect } from "next/navigation";
 
 export async function updateProfile(formData: FormData) {
   const session = await getSession();

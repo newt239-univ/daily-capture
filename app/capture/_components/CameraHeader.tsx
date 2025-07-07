@@ -1,8 +1,10 @@
 "use client";
 
-import { ArrowLeft, Upload } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+
+import { ArrowLeft, Upload } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 
 type CameraHeaderProps = {
   onUploadClick: () => void;

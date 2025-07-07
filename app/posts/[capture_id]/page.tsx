@@ -1,12 +1,16 @@
-import { notFound } from "next/navigation";
-import { ArrowLeft, MapPin, Clock, Calendar, User } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
 import Link from "next/link";
+import { notFound } from "next/navigation";
+
+import { ArrowLeft, MapPin, Clock, Calendar, User } from "lucide-react";
+
 import { getCaptureById } from "../../actions";
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+
 
 type PostDetailPageProps = {
   params: Promise<{ capture_id: string }>;

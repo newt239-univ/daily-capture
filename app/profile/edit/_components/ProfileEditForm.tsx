@@ -1,15 +1,19 @@
 "use client";
 
+import { useState, useRef } from "react";
+
+import { Save, User, Camera, Loader2 } from "lucide-react";
+
+import { updateProfile } from "../../actions";
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Save, User, Camera, Loader2 } from "lucide-react";
-import { useState, useRef } from "react";
 import { supabase } from "@/lib/supabase";
-import { updateProfile } from "../../actions";
+
 
 type ProfileEditFormProps = {
   userProfile: {

@@ -1,10 +1,15 @@
-import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+
+import { ArrowLeft } from "lucide-react";
+
+import ProfileEditForm from "./_components/ProfileEditForm";
+
+import { Button } from "@/components/ui/button";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { redirect } from "next/navigation";
-import ProfileEditForm from "./_components/ProfileEditForm";
+
+
 
 async function getUserProfile(userId: string) {
   const profile = await prisma.profiles.findUnique({

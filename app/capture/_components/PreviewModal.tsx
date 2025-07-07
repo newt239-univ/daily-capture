@@ -1,7 +1,13 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
+
 import { RotateCcw, Check, MapPin } from "lucide-react";
+
+import { createCapture } from "../actions";
+
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,9 +17,6 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import Image from "next/image";
-import { createCapture } from "../actions";
 
 type GeolocationData = {
   lat: number;

@@ -1,3 +1,6 @@
+import Link from "next/link";
+import React from "react";
+
 import {
   Info,
   MessageSquare,
@@ -5,12 +8,13 @@ import {
   LogOut,
   ArrowLeft,
 } from "lucide-react";
+
+import { signOutAction } from "./actions";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-import Link from "next/link";
-import React from "react";
-import { signOutAction } from "./actions";
+
 
 export default async function SettingsPage() {
   return (

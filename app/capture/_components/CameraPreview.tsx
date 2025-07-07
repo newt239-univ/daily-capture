@@ -1,9 +1,11 @@
 "use client";
 
-import { forwardRef } from "react";
-import { Camera } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { forwardRef } from "react";
+
+import { Camera } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 
 interface Shot {
   id: string;
