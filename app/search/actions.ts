@@ -21,6 +21,22 @@ export type SearchResult = {
       avatar_url: string | null;
     };
   }[];
+  posts: {
+    id: string;
+    caption: string | null;
+    media_url: string;
+    media_type: string;
+    created_at: string;
+    user_id: string;
+    spot_id: string;
+    profiles: {
+      username: string;
+      avatar_url: string | null;
+    };
+    spots: {
+      name: string;
+    };
+  }[];
 };
 
 export async function searchContent(query: string): Promise<SearchResult> {
@@ -28,6 +44,7 @@ export async function searchContent(query: string): Promise<SearchResult> {
     return {
       users: [],
       spots: [],
+      posts: [],
     };
   }
 
@@ -86,6 +103,40 @@ export async function searchContent(query: string): Promise<SearchResult> {
       take: 10,
     });
 
+    // 投稿を検索（キャプションで検索）
+    const posts = await prisma.captures.findMany({
+      where: {
+        caption: {
+          contains: searchQuery,
+          mode: "insensitive",
+        },
+      },
+      select: {
+        id: true,
+        caption: true,
+        media_url: true,
+        media_type: true,
+        created_at: true,
+        user_id: true,
+        spot_id: true,
+        profiles: {
+          select: {
+            username: true,
+            avatar_url: true,
+          },
+        },
+        spots: {
+          select: {
+            name: true,
+          },
+        },
+      },
+      take: 10,
+      orderBy: {
+        created_at: "desc",
+      },
+    });
+
     return {
       users: users.map((user) => ({
         id: user.id,
@@ -102,12 +153,24 @@ export async function searchContent(query: string): Promise<SearchResult> {
         reference_image_url: spot.reference_image_url,
         profiles: spot.profiles,
       })),
+      posts: posts.map((post) => ({
+        id: post.id,
+        caption: post.caption,
+        media_url: post.media_url,
+        media_type: post.media_type,
+        created_at: post.created_at?.toISOString() || "",
+        user_id: post.user_id,
+        spot_id: post.spot_id,
+        profiles: post.profiles,
+        spots: post.spots,
+      })),
     };
   } catch (error) {
     console.error("検索エラー:", error);
     return {
       users: [],
       spots: [],
+      posts: [],
     };
   }
 }
