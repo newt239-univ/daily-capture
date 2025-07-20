@@ -2,7 +2,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { redirect, notFound } from "next/navigation";
 
-import { ArrowLeft, Camera, MapPin, UserPlus, UserMinus } from "lucide-react";
+import {
+  ArrowLeft,
+  Camera,
+  MapPin,
+  UserPlus,
+  UserMinus,
+  Users,
+} from "lucide-react";
 
 import { followUser, unfollowUser } from "./actions";
 
@@ -10,8 +17,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-
-
 
 type UserProfileData = {
   id: string;
@@ -194,30 +199,18 @@ export default async function UserPage({
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-3 gap-4 mb-6">
+        <div className="flex justify-center mb-6">
           <div className="text-center">
             <div className="text-2xl font-bold text-gray-900">
               {userProfile.captureCount}
             </div>
             <div className="text-sm text-gray-500">投稿</div>
           </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-gray-900">
-              {userProfile.followerCount}
-            </div>
-            <div className="text-sm text-gray-500">フォロワー</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-gray-900">
-              {userProfile.followingCount}
-            </div>
-            <div className="text-sm text-gray-500">フォロー中</div>
-          </div>
         </div>
       </div>
 
       {/* Recent Posts Grid */}
-      <div className="px-4 pb-20">
+      <div className="px-4 pb-4">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">最近の投稿</h3>
         <div className="grid grid-cols-3 gap-1">
           {userProfile.captures.length > 0
@@ -255,6 +248,33 @@ export default async function UserPage({
                 <Camera className="w-6 h-6 text-gray-400" />
               </div>
             ))}
+        </div>
+      </div>
+
+      {/* Interaction Section */}
+      <div className="px-4 pb-20">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">交流</h3>
+        <div className="space-y-2">
+          <Link
+            href={`/users/${userProfile.username}/followers`}
+            className="flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <Users className="w-5 h-5 text-gray-600" />
+              <span className="text-gray-900 font-medium">フォロワー</span>
+            </div>
+            <div className="text-gray-400">→</div>
+          </Link>
+          <Link
+            href={`/users/${userProfile.username}/follows`}
+            className="flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <UserPlus className="w-5 h-5 text-gray-600" />
+              <span className="text-gray-900 font-medium">フォロー中</span>
+            </div>
+            <div className="text-gray-400">→</div>
+          </Link>
         </div>
       </div>
     </div>
